@@ -24,7 +24,9 @@ public class Category implements Serializable {
     private String description;
     @OneToMany(
             fetch = FetchType.LAZY,
-            mappedBy = "category"
+            mappedBy = "category",
+            cascade = CascadeType.PERSIST,
+            orphanRemoval = true
     )
 
     @JsonIgnore

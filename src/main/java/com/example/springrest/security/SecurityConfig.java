@@ -15,10 +15,12 @@ public class SecurityConfig {
         return http.httpBasic(Customizer.withDefaults()).
                 authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/places").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/categories").permitAll()
-                        //.requestMatchers(HttpMethod.GET, "/api/v1/categories/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/places").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/places").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/places/*").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/places/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/*").authenticated()
                         .anyRequest().denyAll())
                 .build();

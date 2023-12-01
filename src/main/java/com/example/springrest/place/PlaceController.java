@@ -5,12 +5,13 @@ import org.geolatte.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
@@ -45,4 +46,21 @@ public class PlaceController {
         return placeService.getNearbyPlaces(coordinates, pageable);
     }
     */
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Place> addNewPlace(@RequestBody @Validated PlaceDto place){
+        Place createdPlace = placeService.addNewPlace(place);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdPlace.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(createdPlace);
+    }
+
+    @PutMapping("/{id}")
+    public void updatePlace(@PathVariable Long id, @RequestBody @Validated Place place){
+        placeService.updatePlace(place, id);
+    }
 }

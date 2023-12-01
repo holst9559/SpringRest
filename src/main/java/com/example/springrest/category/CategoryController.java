@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
 
 
 @RestController
@@ -28,12 +29,12 @@ public class CategoryController {
         return categoryService.getAllCategories(pageable);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public Category getCategoryById(@PathVariable long id){
         return categoryService.getCategoryById(id);
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/{name:.*\\D.*}")
     public Category getCategoryByName(@PathVariable String name){
         return categoryService.getCategoryByName(name);
     }

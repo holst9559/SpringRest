@@ -23,22 +23,30 @@ public class Place implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotBlank
     @Size(max = 255)
     @Column
     private String name;
+
     @Column(nullable = false)
-    private Long userId;
+    private String userId;
+    private Boolean visible = false;
+
     @JsonSerialize(using = Point2DSerializer.class)
     private Point<G2D> coordinate;
+
     @Size(max = 255)
     private String description;
+
     @ManyToOne
     private Category category;
-    private String status;
+
     @CreationTimestamp
+    @Column
     private LocalDateTime createdDateTime;
     @UpdateTimestamp
+    @Column
     private LocalDateTime updatedDateTime;
 
     public Long getId() {
@@ -57,12 +65,20 @@ public class Place implements Serializable{
         this.name = name;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 
     public Point<G2D> getCoordinate() {
@@ -87,14 +103,6 @@ public class Place implements Serializable{
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public LocalDateTime getCreatedDateTime() {
