@@ -17,6 +17,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/places").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/categories").permitAll()
+                        //.requestMatchers(HttpMethod.GET, "/api/v1/categories/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/places").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/*").authenticated()
                         .anyRequest().denyAll())

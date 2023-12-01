@@ -31,14 +31,11 @@ public class CategoryService {
     }
 
     public void addNewCategory(@Validated Category category){
-        boolean categoryExist = categoryRepository.existsByName(category.getName());
-        if(categoryExist){
-            throw new RuntimeException("Category exists");
+        if(categoryRepository.findByName(category.getName()).toString().equals(category.getName())){
+            throw new RuntimeException("Category already exists");
         }
-
         categoryRepository.save(category);
     }
-
 
 }
 
