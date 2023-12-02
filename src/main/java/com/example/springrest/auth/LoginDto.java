@@ -1,2 +1,9 @@
-package com.example.springrest.auth;public class LoginDto {
+package com.example.springrest.auth;
+
+import lombok.Data;
+
+@Data
+public class LoginDto {
+    private String username;
+    private String password;
 }

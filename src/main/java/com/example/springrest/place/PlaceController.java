@@ -1,7 +1,7 @@
 package com.example.springrest.place;
 
 
-import org.geolatte.geom.Point;
+import com.example.springrest.utility.CoordinateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/places")
@@ -30,7 +29,7 @@ public class PlaceController {
         return placeService.getAllPlaces(pageable);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public Place getPlaceById(@PathVariable long id){
         return placeService.getPlaceById(id);
     }
@@ -59,7 +58,7 @@ public class PlaceController {
         return ResponseEntity.created(location).body(createdPlace);
     }
 
-    @PutMapping("/{id}") //Update Place
+    @PutMapping("/{id:\\d+}") //Update Place
     public ResponseEntity<Place> updatePlace(@PathVariable Long id, @RequestBody @Validated PlaceDto place){
         Place updatedPlace = placeService.updatePlace(place, id);
         URI location = ServletUriComponentsBuilder
@@ -71,11 +70,9 @@ public class PlaceController {
     }
 
 
-    @PatchMapping("/{id}") //Update coordinates
-    public ResponseEntity<Place> updateLocation(@PathVariable Long id, @RequestBody @Validated float lon,@Validated float lat){
-        System.out.println(lon);
-        System.out.println(lat);
-        Place updatedCoordinates = placeService.updateCoordinates(lon, lat, id);
+    @PatchMapping("/{id:\\d+}") //Update coordinates
+    public ResponseEntity<Place> updateLocation(@PathVariable Long id, @RequestBody @Validated CoordinateRequest coordinateRequest){
+        Place updatedCoordinates = placeService.updateCoordinates(coordinateRequest, id);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

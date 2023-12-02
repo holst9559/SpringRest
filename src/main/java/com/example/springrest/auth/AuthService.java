@@ -5,45 +5,28 @@ import com.example.springrest.role.RoleRepository;
 import com.example.springrest.user.UserEntity;
 import com.example.springrest.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.Set;
 
 
 @Service
-public class AuthenticationService {
-    @Autowired
-    private AuthenticationManager authenticationManager;
+public class AuthService {
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder){
+    public AuthService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       RoleRepository roleRepository){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
-    public Authentication singin(LoginDto loginDto){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken
-                        (loginDto.getUsername(),loginDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return authentication;
-    }
-
-    public UserEntity register(RegisterDto registerDto) {
+    public void register(RegisterDto registerDto) {
         if(userRepository.existsByUsername(registerDto.getUsername())){
             throw new RuntimeException("Username already exist!");
         }
@@ -51,11 +34,10 @@ public class AuthenticationService {
         user.setUsername(registerDto.getUsername());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
-
-
         Role roles = roleRepository.findByName("ROLE_" + registerDto.getRole()).get();
-        user.setRoles(Collections.singleton(roles));
+        user.setRoles(Set.of(roles));
 
-        return userRepository.save(user);
+
+        userRepository.save(user);
     }
 }

@@ -1,7 +1,7 @@
 package com.example.springrest.auth;
 
-import com.example.springrest.user.UserEntity;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,14 +11,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
-public class AuthenticationController {
+public class AuthController {
+    private final AuthService authenticationService;
 
-    private final AuthenticationService authenticationService;
+    @Autowired
+    public AuthController(AuthService authenticationService){
+        this.authenticationService = authenticationService;
+    }
 
     @PostMapping("/register")
-    public ResponseEntity<UserEntity> register(@RequestBody @Validated  RegisterRequest request){
-        return ResponseEntity.ok(authenticationService.register(request));
+    public ResponseEntity<String> register(@RequestBody @Validated  RegisterDto registerDto){
+        authenticationService.register(registerDto);
+        return new ResponseEntity<>("User created successfully!", HttpStatus.OK);
     }
 
 }

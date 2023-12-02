@@ -3,6 +3,7 @@ package com.example.springrest.place;
 import com.example.springrest.category.Category;
 import com.example.springrest.category.CategoryRepository;
 import com.example.springrest.category.CategoryService;
+import com.example.springrest.utility.CoordinateRequest;
 import com.example.springrest.utility.Point2DSerializer;
 import jakarta.transaction.Transactional;
 import org.geolatte.geom.G2D;
@@ -15,9 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.sql.SQLOutput;
-import java.util.Optional;
 
 import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
 
@@ -63,7 +63,6 @@ public class PlaceService {
         }
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
-        System.out.println(categoryService.getCategoryByName(place.category()));
         Category category = categoryService.getCategoryByName(place.category());
 
         var geo = Geometries.mkPoint(new G2D(place.lon(), place.lat()), WGS84);
@@ -81,6 +80,8 @@ public class PlaceService {
 
     @Transactional
     public Place updatePlace(@Validated PlaceDto place, Long id){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
         placeRepository.findById(id).orElseThrow();
         categoryRepository.findByName(place.category()).orElseThrow();
         Place updatedPlace = Place.of(place);
@@ -89,11 +90,13 @@ public class PlaceService {
     }
 
     @Transactional
-    public Place updateCoordinates(@Validated float lon,@Validated  float lat, Long id){
+    public Place updateCoordinates(@Validated @RequestBody CoordinateRequest coordinateRequest, Long id){
+        if(coordinateRequest.lat() < -90 || coordinateRequest.lat() > 90 || coordinateRequest.lon() < -180 || coordinateRequest.lon() > 180 ){
+            throw new IllegalArgumentException("Invalid coordinates");
+        }
+        var geo = Geometries.mkPoint(new G2D(coordinateRequest.lon(), coordinateRequest.lat()), WGS84);
+
         Place place = placeRepository.findById(id).orElseThrow();
-        System.out.println("THIS PLACE");
-        System.out.println(place);
-        var geo = Geometries.mkPoint(new G2D(lon, lat), WGS84);
         place.setCoordinate(geo);
 
         return placeRepository.save(place);

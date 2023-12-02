@@ -7,11 +7,15 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import com.example.springrest.place.Place;
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 @Table
+@Getter
+@Setter
 public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +23,7 @@ public class Category implements Serializable {
     @Column(unique = true)
     @NotBlank
     private String name;
-    @NotBlank //Emoji???
+    @NotBlank
     private String symbol;
     private String description;
     @OneToMany(
@@ -37,38 +41,6 @@ public class Category implements Serializable {
     public Category(String name, String symbol, String description) {
         this.name = name;
         this.symbol = symbol;
-        this.description = description;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
     }
 
