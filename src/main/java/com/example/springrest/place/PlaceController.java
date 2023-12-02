@@ -59,8 +59,29 @@ public class PlaceController {
         return ResponseEntity.created(location).body(createdPlace);
     }
 
-    @PutMapping("/{id}")
-    public void updatePlace(@PathVariable Long id, @RequestBody @Validated Place place){
-        placeService.updatePlace(place, id);
+    @PutMapping("/{id}") //Update Place
+    public ResponseEntity<Place> updatePlace(@PathVariable Long id, @RequestBody @Validated PlaceDto place){
+        Place updatedPlace = placeService.updatePlace(place, id);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(updatedPlace.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(updatedPlace);
+    }
+
+
+    @PatchMapping("/{id}") //Update coordinates
+    public ResponseEntity<Place> updateLocation(@PathVariable Long id, @RequestBody @Validated float lon,@Validated float lat){
+        System.out.println(lon);
+        System.out.println(lat);
+        Place updatedCoordinates = placeService.updateCoordinates(lon, lat, id);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(updatedCoordinates.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(updatedCoordinates);
+
     }
 }

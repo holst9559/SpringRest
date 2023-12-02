@@ -3,6 +3,7 @@ package com.example.springrest.place;
 import com.example.springrest.category.Category;
 import com.example.springrest.category.CategoryRepository;
 import com.example.springrest.category.CategoryService;
+import com.example.springrest.utility.Point2DSerializer;
 import jakarta.transaction.Transactional;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Geometries;
@@ -79,8 +80,22 @@ public class PlaceService {
     }
 
     @Transactional
-    public void updatePlace(@Validated Place place, Long id){
+    public Place updatePlace(@Validated PlaceDto place, Long id){
+        placeRepository.findById(id).orElseThrow();
+        categoryRepository.findByName(place.category()).orElseThrow();
+        Place updatedPlace = Place.of(place);
 
+        return placeRepository.save(updatedPlace);
     }
 
+    @Transactional
+    public Place updateCoordinates(@Validated float lon,@Validated  float lat, Long id){
+        Place place = placeRepository.findById(id).orElseThrow();
+        System.out.println("THIS PLACE");
+        System.out.println(place);
+        var geo = Geometries.mkPoint(new G2D(lon, lat), WGS84);
+        place.setCoordinate(geo);
+
+        return placeRepository.save(place);
+    }
 }

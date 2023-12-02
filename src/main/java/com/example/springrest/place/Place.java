@@ -17,6 +17,8 @@ import java.util.Objects;
 import org.geolatte.geom.G2D;
 import org.hibernate.proxy.HibernateProxy;
 
+import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
+
 @Entity
 @Table
 public class Place implements Serializable{
@@ -135,5 +137,21 @@ public class Place implements Serializable{
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public static Place of(PlaceDto placeDto) {
+        Place place = new Place();
+
+        Point<G2D> coordinate = new Point<>(new G2D(placeDto.lon(), placeDto.lat()), WGS84);
+        place.setCoordinate(coordinate);
+
+        place.setName(placeDto.name());
+        place.setDescription(placeDto.description());
+        place.setVisible(placeDto.visible());
+        Category category = new Category();
+        category.setName(placeDto.category());
+        place.setCategory(category);
+
+        return place;
     }
 }
