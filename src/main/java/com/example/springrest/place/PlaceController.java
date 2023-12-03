@@ -36,6 +36,11 @@ public class PlaceController {
         return placeService.getPlaceById(id);
     }
 
+    @GetMapping("/{name:.*\\D.*}")
+    public Place getPlaceByName(@PathVariable String name){
+        return placeService.getPlaceByName(name);
+    }
+
     @GetMapping("/category/{categoryName}")
     public Page<Place> getPlacesByCategoryName(@PathVariable String categoryName, Pageable pageable){
         return placeService.getPlacesByCategoryName(categoryName, pageable);

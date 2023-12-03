@@ -71,8 +71,12 @@ public class PlaceService {
         return placeRepository.findByIdAndVisible(id, true).orElseThrow();
     }
 
+    public Place getPlaceByName(String name){
+        return placeRepository.findByNameAndVisible(name, true).orElseThrow();
+    }
+
     public Page<Place> getPlacesByCategoryName(String name, Pageable pageable){
-        return placeRepository.findAllByCategoryName(name,true, pageable);
+        return placeRepository.findAllByCategoryNameAndVisible(name,true, pageable);
     }
 
     /*
@@ -107,9 +111,12 @@ public class PlaceService {
 
     @Transactional
     public Place updatePlace(@Validated PlaceDto place, Long id){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName = auth.getName();
-        placeRepository.findById(id).orElseThrow();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(username.equals("anonymousUser")){
+            throw new IllegalAccessError("Not authorized, please log in");
+        }
+
+        placeRepository.findByIdAndUserId(id, username).orElseThrow();
         categoryRepository.findByName(place.category()).orElseThrow();
         Place updatedPlace = Place.of(place);
 
@@ -118,12 +125,17 @@ public class PlaceService {
 
     @Transactional
     public Place updateCoordinates(@Validated @RequestBody CoordinateRequest coordinateRequest, Long id){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(username.equals("anonymousUser")){
+            throw new IllegalAccessError("Not authorized, please log in");
+        }
+
         if(coordinateRequest.lat() < -90 || coordinateRequest.lat() > 90 || coordinateRequest.lon() < -180 || coordinateRequest.lon() > 180 ){
             throw new IllegalArgumentException("Invalid coordinates");
         }
         var geo = Geometries.mkPoint(new G2D(coordinateRequest.lon(), coordinateRequest.lat()), WGS84);
 
-        Place place = placeRepository.findById(id).orElseThrow();
+        Place place = placeRepository.findByIdAndUserId(id, username).orElseThrow();
         place.setCoordinate(geo);
 
         return placeRepository.save(place);
