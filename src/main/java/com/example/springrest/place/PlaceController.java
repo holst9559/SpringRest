@@ -1,14 +1,11 @@
 package com.example.springrest.place;
 
-
 import com.example.springrest.utility.CoordinateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -47,8 +44,11 @@ public class PlaceController {
     }
 
     @GetMapping("/nearby") //Get all nearby places
-    public Page<Place> getNearbyPlaces(@Validated CoordinateRequest coordinates , Pageable pageable){
-        return placeService.getNearbyPlaces(coordinates, pageable);
+    public Page<Place> getNearbyPlaces(@RequestParam float lon,
+                                       @RequestParam float lat,
+                                       @RequestParam double radius,
+                                       Pageable pageable){
+        return placeService.getNearbyPlaces(lon, lat, radius, pageable);
     }
 
     @PostMapping
@@ -74,7 +74,6 @@ public class PlaceController {
         return ResponseEntity.created(location).body(updatedPlace);
     }
 
-
     @PatchMapping("/{id:\\d+}") //Update coordinates
     public ResponseEntity<Place> updateLocation(@PathVariable Long id, @RequestBody @Validated CoordinateRequest coordinateRequest){
         Place updatedCoordinates = placeService.updateCoordinates(coordinateRequest, id);
@@ -86,7 +85,6 @@ public class PlaceController {
         return ResponseEntity.created(location).body(updatedCoordinates);
 
     }
-
 
     @DeleteMapping("/{id:\\d+}")
     public ResponseEntity<?> deletePlace(@PathVariable Long id){

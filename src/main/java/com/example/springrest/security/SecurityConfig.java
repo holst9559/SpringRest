@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/places/*").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/places/*").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/places/nearby").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/user").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/user/register").permitAll()

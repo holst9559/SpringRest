@@ -1,8 +1,12 @@
 package com.example.springrest.place;
 
+import org.geolatte.geom.G2D;
+import org.geolatte.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -17,9 +21,10 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByNameAndVisible(String name, boolean visible);
 
 
-
-    // Page<Place> findNearbyPlaces(Point coordinates, double radius, Pageable pageable);
-
-
+    @Query(value = """
+            SELECT * FROM place
+            WHERE ST_Distance_Sphere(coordinate, :place) < :radius
+                """, nativeQuery = true)
+    Page<Place> findNearbyPlaces(@Param("place") Point<G2D> place, @Param("radius") double radius, Pageable pageable);
 
 }

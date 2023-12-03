@@ -4,31 +4,23 @@ import com.example.springrest.category.Category;
 import com.example.springrest.category.CategoryRepository;
 import com.example.springrest.category.CategoryService;
 import com.example.springrest.utility.CoordinateRequest;
-import com.example.springrest.utility.Point2DSerializer;
 import jakarta.transaction.Transactional;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Geometries;
-import org.geolatte.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
-import static org.geolatte.geom.crs.CoordinateReferenceSystems.mkCoordinateReferenceSystem;
 
 @Service
 public class PlaceService {
@@ -43,7 +35,7 @@ public class PlaceService {
         this.placeRepository = placeRepository;
         this.categoryRepository = categoryRepository;
         this.categoryService = categoryService;
-    };
+    }
 
 
     public Page<Place> getAllPlaces(Pageable pageable){
@@ -69,11 +61,13 @@ public class PlaceService {
     }
 
     public Place getPlaceById(long id){
-        return placeRepository.findByIdAndVisible(id, true).orElseThrow();
+        return placeRepository.findByIdAndVisible(id, true).orElseThrow(() ->
+                new RuntimeException("Place does not exist"));
     }
 
     public Place getPlaceByName(String name){
-        return placeRepository.findByNameAndVisible(name, true).orElseThrow();
+        return placeRepository.findByNameAndVisible(name, true).orElseThrow(() ->
+                new RuntimeException("Place does not exist"));
     }
 
     public Page<Place> getPlacesByCategoryName(String name, Pageable pageable){
@@ -81,13 +75,9 @@ public class PlaceService {
     }
 
 
-    public Page<Place> getNearbyPlaces(CoordinateRequest coordinates, Pageable pageable){
-        String pointText = "POINT(" + coordinates.lat() + " " + coordinates.lon() + ")";
-        double radius = coordinates.
-        System.out.println(radius);
-
-
-        return placeRepository.findNearbyPlaces(coordinates, radius, pageable);
+    public Page<Place> getNearbyPlaces(float lon, float lat, double radius, Pageable pageable){
+        var geo = Geometries.mkPoint(new G2D(lon, lat), WGS84);
+        return placeRepository.findNearbyPlaces(geo, radius, pageable);
     }
 
     public Place addNewPlace(@Validated PlaceDto place){
@@ -118,8 +108,10 @@ public class PlaceService {
             throw new IllegalAccessError("Not authorized, please log in");
         }
 
-        placeRepository.findByIdAndUserId(id, username).orElseThrow();
-        categoryRepository.findByName(place.category()).orElseThrow();
+        placeRepository.findByIdAndUserId(id, username).orElseThrow(() ->
+                new RuntimeException("Place does not exist"));
+        categoryRepository.findByName(place.category()).orElseThrow(() ->
+                new RuntimeException("Place does not exist"));
         Place updatedPlace = Place.of(place);
 
         return placeRepository.save(updatedPlace);
@@ -137,7 +129,8 @@ public class PlaceService {
         }
         var geo = Geometries.mkPoint(new G2D(coordinateRequest.lon(), coordinateRequest.lat()), WGS84);
 
-        Place place = placeRepository.findByIdAndUserId(id, username).orElseThrow();
+        Place place = placeRepository.findByIdAndUserId(id, username).orElseThrow(() ->
+                new RuntimeException("Place does not exist"));
         place.setCoordinate(geo);
 
         return placeRepository.save(place);
@@ -146,7 +139,8 @@ public class PlaceService {
     @Transactional
     public void deletePlace(Long id){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        placeRepository.findByIdAndUserId(id, username).orElseThrow();
+        placeRepository.findByIdAndUserId(id, username).orElseThrow(() ->
+                new RuntimeException("Place does not exist"));
         placeRepository.deleteById(id);
 
     }

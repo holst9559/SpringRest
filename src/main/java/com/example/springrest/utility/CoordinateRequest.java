@@ -8,9 +8,9 @@ public record CoordinateRequest(
         @NotNull
         float lon,
         @NotNull
-        float lat
+        float lat,
+
+        @NotNull
+        double radius
         ) {
-    public List<Float> coordinates(){
-        return List.of(lon, lat);
-    }
 }

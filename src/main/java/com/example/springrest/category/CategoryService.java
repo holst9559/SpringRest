@@ -16,16 +16,17 @@ public class CategoryService {
     }
 
     public Page<Category> getAllCategories(Pageable pageable){
-        System.out.println("TEST");
         return categoryRepository.findAll(pageable);
     }
 
     public Category getCategoryById(long id){
-        return categoryRepository.findById(id).orElseThrow();
+        return categoryRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Category not found"));
     }
 
     public Category getCategoryByName(String name){
-        return categoryRepository.findByName(name).orElseThrow();
+        return categoryRepository.findByName(name).orElseThrow(() ->
+                new RuntimeException("Category not found"));
     }
 
     public void addNewCategory(@Validated Category category){
