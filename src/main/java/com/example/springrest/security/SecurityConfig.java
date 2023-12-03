@@ -31,8 +31,8 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/categories").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/categories").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/*").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/categories").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/places").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/places/*").permitAll()
