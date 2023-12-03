@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -39,8 +41,10 @@ public class PlaceController {
         return placeService.getPlacesByCategoryName(categoryName, pageable);
     }
 
+
+
     /*
-    @GetMapping("/nearby")
+    @GetMapping("/nearby") //Get all nearby places
     public Page<Place> getNearbyPlaces(@Validated Point coordinates , Pageable pageable){
         return placeService.getNearbyPlaces(coordinates, pageable);
     }
@@ -80,5 +84,12 @@ public class PlaceController {
                 .toUri();
         return ResponseEntity.created(location).body(updatedCoordinates);
 
+    }
+
+
+    @DeleteMapping("/{id:\\d+}")
+    public ResponseEntity<?> deletePlace(@PathVariable Long id){
+        placeService.deletePlace(id);
+        return ResponseEntity.noContent().build();
     }
 }

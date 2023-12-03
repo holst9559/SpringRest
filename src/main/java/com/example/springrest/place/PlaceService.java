@@ -12,12 +12,20 @@ import org.geolatte.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
 
@@ -36,16 +44,35 @@ public class PlaceService {
         this.categoryService = categoryService;
     };
 
+
     public Page<Place> getAllPlaces(Pageable pageable){
-        return placeRepository.findAll(pageable);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Page<Place> publicPlace = placeRepository.findAllByVisible(true, pageable);
+
+        if(username.equals("anonymousUser")){
+            return publicPlace;
+        }
+
+        Page<Place> userPlace = placeRepository.findAllByUserId(username, pageable);
+        List<Place> mergedList = Stream.concat(userPlace.stream(), publicPlace.stream())
+                .distinct()
+                .toList();
+
+        Page<Place> payload = PageableExecutionUtils.getPage(
+                mergedList,
+                pageable,
+                () -> userPlace.getTotalElements() + publicPlace.getTotalElements()
+        );
+
+        return payload;
     }
 
     public Place getPlaceById(long id){
-        return placeRepository.findById(id).orElseThrow();
+        return placeRepository.findByIdAndVisible(id, true).orElseThrow();
     }
 
     public Page<Place> getPlacesByCategoryName(String name, Pageable pageable){
-        return placeRepository.findAllByCategoryName(name, pageable);
+        return placeRepository.findAllByCategoryName(name,true, pageable);
     }
 
     /*
@@ -100,5 +127,13 @@ public class PlaceService {
         place.setCoordinate(geo);
 
         return placeRepository.save(place);
+    }
+
+    @Transactional
+    public void deletePlace(Long id){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        placeRepository.findByIdAndUserId(id, username).orElseThrow();
+        placeRepository.deleteById(id);
+
     }
 }

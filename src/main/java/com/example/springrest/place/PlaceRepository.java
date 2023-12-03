@@ -9,10 +9,14 @@ import java.util.Optional;
 
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
-    Page<Place> findAllByCategoryName(String categoryName, Pageable pageable);
-
+    Page<Place> findAllByCategoryName(String categoryName,boolean visible, Pageable pageable);
+    Page<Place> findAllByVisible(boolean visible, Pageable pageable);
+    Page<Place> findAllByUserId(String username, Pageable pageable);
+    Optional<Place> findByIdAndVisible(Long aLong, boolean visible);
+    Optional<Place> findByIdAndUserId(Long aLong, String username);
     Optional<Place> findByName(String name);
     Optional<Place> findById(Long along);
+
 
 
     // Page<Place> findNearbyPlaces(Point coordinates, double radius, Pageable pageable);
