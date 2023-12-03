@@ -46,14 +46,10 @@ public class PlaceController {
         return placeService.getPlacesByCategoryName(categoryName, pageable);
     }
 
-
-
-    /*
     @GetMapping("/nearby") //Get all nearby places
-    public Page<Place> getNearbyPlaces(@Validated Point coordinates , Pageable pageable){
+    public Page<Place> getNearbyPlaces(@Validated CoordinateRequest coordinates , Pageable pageable){
         return placeService.getNearbyPlaces(coordinates, pageable);
     }
-    */
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

@@ -7,7 +7,6 @@ import java.util.List;
 public record CoordinateRequest(
         @NotNull
         float lon,
-
         @NotNull
         float lat
         ) {

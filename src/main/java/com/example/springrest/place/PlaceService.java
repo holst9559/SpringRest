@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
+import static org.geolatte.geom.crs.CoordinateReferenceSystems.mkCoordinateReferenceSystem;
 
 @Service
 public class PlaceService {
@@ -79,15 +80,16 @@ public class PlaceService {
         return placeRepository.findAllByCategoryNameAndVisible(name,true, pageable);
     }
 
-    /*
-    public Page<Place> getNearbyPlaces(Point coordinates, Pageable pageable){
-        double radius = coordinates.getPosition().getCoordinateDimension();
+
+    public Page<Place> getNearbyPlaces(CoordinateRequest coordinates, Pageable pageable){
+        String pointText = "POINT(" + coordinates.lat() + " " + coordinates.lon() + ")";
+        double radius = coordinates.
         System.out.println(radius);
 
 
         return placeRepository.findNearbyPlaces(coordinates, radius, pageable);
     }
-    */
+
     public Place addNewPlace(@Validated PlaceDto place){
         if(place.lat() < -90 || place.lat() > 90 || place.lon() < -180 || place.lon() > 180 ){
             throw new IllegalArgumentException("Invalid coordinates");
