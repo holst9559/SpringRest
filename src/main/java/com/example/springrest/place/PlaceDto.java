@@ -1,18 +1,17 @@
 package com.example.springrest.place;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 
 public record PlaceDto(
         @NotBlank
-        Long id,
-        @NotBlank
         String name,
         Boolean visible,
-        @NotBlank
+        @NotNull
         Float lat,
-        @NotBlank
+        @NotNull
         Float lon,
         @NotBlank
         String category,
