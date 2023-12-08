@@ -1,5 +1,7 @@
 package com.example.springrest.category;
 
+import com.example.springrest.Exception.ResourceAlreadyExistException;
+import com.example.springrest.Exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,19 +21,19 @@ public class CategoryService {
         return categoryRepository.findAll(pageable);
     }
 
-    public Category getCategoryById(long id){
+    public Category getCategoryById(Long id){
         return categoryRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("Category not found"));
+                new ResourceNotFoundException(id.toString()));
     }
 
     public Category getCategoryByName(String name){
         return categoryRepository.findByName(name).orElseThrow(() ->
-                new RuntimeException("Category not found"));
+                new ResourceNotFoundException(name));
     }
 
     public void addNewCategory(@Validated Category category){
         if(categoryRepository.findByName(category.getName()).toString().equals(category.getName())){
-            throw new RuntimeException("Category already exists");
+            throw new ResourceAlreadyExistException(category.getName());
         }
         categoryRepository.save(category);
     }

@@ -29,7 +29,7 @@ public class PlaceController {
     }
 
     @GetMapping("/{id:\\d+}")
-    public Place getPlaceById(@PathVariable long id){
+    public Place getPlaceById(@PathVariable Long id){
         return placeService.getPlaceById(id);
     }
 

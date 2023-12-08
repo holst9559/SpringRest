@@ -1,5 +1,6 @@
 package com.example.springrest.user;
 
+import com.example.springrest.Exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ public class UserService {
     public User getUserByName(String username){
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with username: " + username));
+                        new ResourceNotFoundException(username));
 
         Set<GrantedAuthority> authorities = user
                 .getRoles()
@@ -42,7 +43,7 @@ public class UserService {
 
     public void deleteUser(String username){
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() ->
-                new UsernameNotFoundException("User not found with username: " + username));
+                new ResourceNotFoundException(username));
         userRepository.delete(user);
 
 

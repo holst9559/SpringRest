@@ -1,5 +1,6 @@
 package com.example.springrest.auth;
 
+import com.example.springrest.Exception.ResourceAlreadyExistException;
 import com.example.springrest.role.Role;
 import com.example.springrest.role.RoleRepository;
 import com.example.springrest.user.UserEntity;
@@ -28,7 +29,7 @@ public class AuthService {
 
     public void register(RegisterDto registerDto) {
         if(userRepository.existsByUsername(registerDto.getUsername())){
-            throw new RuntimeException("Username already exist!");
+            throw new ResourceAlreadyExistException(registerDto.getUsername());
         }
         UserEntity user = new UserEntity();
         user.setUsername(registerDto.getUsername());

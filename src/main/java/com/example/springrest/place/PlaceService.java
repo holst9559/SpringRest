@@ -1,5 +1,8 @@
 package com.example.springrest.place;
 
+import com.example.springrest.Exception.AuthorizationException;
+import com.example.springrest.Exception.InvalidCoordinatesException;
+import com.example.springrest.Exception.ResourceNotFoundException;
 import com.example.springrest.category.Category;
 import com.example.springrest.category.CategoryRepository;
 import com.example.springrest.category.CategoryService;
@@ -60,14 +63,14 @@ public class PlaceService {
         return payload;
     }
 
-    public Place getPlaceById(long id){
+    public Place getPlaceById(Long id){
         return placeRepository.findByIdAndVisible(id, true).orElseThrow(() ->
-                new RuntimeException("Place does not exist"));
+                new ResourceNotFoundException(id.toString()));
     }
 
     public Place getPlaceByName(String name){
         return placeRepository.findByNameAndVisible(name, true).orElseThrow(() ->
-                new RuntimeException("Place does not exist"));
+                new ResourceNotFoundException(name));
     }
 
     public Page<Place> getPlacesByCategoryName(String name, Pageable pageable){
@@ -82,7 +85,7 @@ public class PlaceService {
 
     public Place addNewPlace(@Validated PlaceDto place){
         if(place.lat() < -90 || place.lat() > 90 || place.lon() < -180 || place.lon() > 180 ){
-            throw new IllegalArgumentException("Invalid coordinates");
+            throw new InvalidCoordinatesException(place.lat(), place.lon());
         }
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
@@ -104,14 +107,14 @@ public class PlaceService {
     @Transactional
     public Place updatePlace(@Validated PlaceDto place, Long id){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(username.equals("anonymousUser")){
-            throw new IllegalAccessError("Not authorized, please log in");
+        if(username.equals("anonymousUser")){ //Redundant då detta fångas redan i SecurityConfig?
+            new AuthorizationException(username);
         }
 
         placeRepository.findByIdAndUserId(id, username).orElseThrow(() ->
-                new RuntimeException("Place does not exist"));
+                new ResourceNotFoundException(id.toString()));
         categoryRepository.findByName(place.category()).orElseThrow(() ->
-                new RuntimeException("Place does not exist"));
+                new ResourceNotFoundException(id.toString()));
         Place updatedPlace = Place.of(place);
 
         return placeRepository.save(updatedPlace);
@@ -120,17 +123,17 @@ public class PlaceService {
     @Transactional
     public Place updateCoordinates(@Validated @RequestBody CoordinateRequest coordinateRequest, Long id){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(username.equals("anonymousUser")){
-            throw new IllegalAccessError("Not authorized, please log in");
+        if(username.equals("anonymousUser")){ //Redundant då detta fångas redan i SecurityConfig?
+            new AuthorizationException(username);
         }
 
         if(coordinateRequest.lat() < -90 || coordinateRequest.lat() > 90 || coordinateRequest.lon() < -180 || coordinateRequest.lon() > 180 ){
-            throw new IllegalArgumentException("Invalid coordinates");
+            throw new InvalidCoordinatesException(coordinateRequest.lat(), coordinateRequest.lon());
         }
         var geo = Geometries.mkPoint(new G2D(coordinateRequest.lon(), coordinateRequest.lat()), WGS84);
 
         Place place = placeRepository.findByIdAndUserId(id, username).orElseThrow(() ->
-                new RuntimeException("Place does not exist"));
+                new ResourceNotFoundException(id.toString()));
         place.setCoordinate(geo);
 
         return placeRepository.save(place);
@@ -140,7 +143,7 @@ public class PlaceService {
     public void deletePlace(Long id){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         placeRepository.findByIdAndUserId(id, username).orElseThrow(() ->
-                new RuntimeException("Place does not exist"));
+                new ResourceNotFoundException(id.toString()));
         placeRepository.deleteById(id);
 
     }

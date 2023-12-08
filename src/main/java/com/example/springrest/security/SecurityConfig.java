@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/places/*").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/places/*").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/places/*").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/places/categories/*").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/places/nearby").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/user").permitAll()
