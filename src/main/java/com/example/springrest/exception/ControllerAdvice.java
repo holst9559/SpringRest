@@ -1,4 +1,4 @@
-package com.example.springrest.Exception;
+package com.example.springrest.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;

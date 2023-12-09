@@ -1,8 +1,8 @@
 package com.example.springrest.place;
 
-import com.example.springrest.Exception.AuthorizationException;
-import com.example.springrest.Exception.InvalidCoordinatesException;
-import com.example.springrest.Exception.ResourceNotFoundException;
+import com.example.springrest.exception.AuthorizationException;
+import com.example.springrest.exception.InvalidCoordinatesException;
+import com.example.springrest.exception.ResourceNotFoundException;
 import com.example.springrest.category.Category;
 import com.example.springrest.category.CategoryRepository;
 import com.example.springrest.category.CategoryService;

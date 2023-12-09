@@ -1,4 +1,4 @@
-package com.example.springrest.Exception;
+package com.example.springrest.exception;
 
 public class InvalidCoordinatesException extends IllegalArgumentException{
     private final Float lat;

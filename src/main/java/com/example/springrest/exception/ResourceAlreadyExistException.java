@@ -1,4 +1,4 @@
-package com.example.springrest.Exception;
+package com.example.springrest.exception;
 
 public class ResourceAlreadyExistException extends RuntimeException{
     private final String id;

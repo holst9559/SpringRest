@@ -1,6 +1,6 @@
 package com.example.springrest.auth;
 
-import com.example.springrest.Exception.ResourceAlreadyExistException;
+import com.example.springrest.exception.ResourceAlreadyExistException;
 import com.example.springrest.role.Role;
 import com.example.springrest.role.RoleRepository;
 import com.example.springrest.user.UserEntity;
